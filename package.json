@@ -14,10 +14,19 @@
   "contributes": {
     "commands": [
       {
-        "command": "gmod-lua-entity-creator.helloWorld",
-        "title": "Hello World"
+        "command": "extension.createEntity",
+        "title": "Create Blank Entity"
       }
-    ]
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "when": "explorerResourceIsFolder",
+          "command": "extension.createEntity",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

@@ -1,71 +1,32 @@
-# gmod-lua-entity-creator README
+# GMod Entity Creator for VS Code
 
-This is the README for your extension "gmod-lua-entity-creator". After writing up a brief description, we recommend including the following sections.
+A Visual Studio Code extension that simplifies the process of creating new Garry's Mod (GMod) entities using Lua.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- Create new GMod entities by right-clicking on a folder in the file explorer
+- Prompt for entity settings such as class name, print name, category, type (prop or entity), and more
+- Automatically generate `cl_init.lua`, `init.lua`, and `shared.lua` files with the appropriate content based on user input
 
-For example if there is an image subfolder under your extension project workspace:
+## Installation
 
-\!\[feature X\]\(images/feature-x.png\)
+1. Open Visual Studio Code
+2. Press `Ctrl+P` to open the Quick Open dialog
+3. Type `ext install gmod-lua-entity-creator` and press `Enter`
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## Usage
 
-## Requirements
+1. Navigate to the file explorer in Visual Studio Code
+2. Right-click on the folder where you want to create a new entity
+3. Select "Create Entity" from the context menu
+4. Fill in the entity settings in the input prompts
+5. The extension will generate the required files (`cl_init.lua`, `init.lua`, and `shared.lua`) in a new folder named after the specified class name
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+## Contributing
 
-## Extension Settings
+If you want to contribute to this project, please submit a pull request on the GitHub repository.
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+## License
 
-For example:
+This extension is released under the [MIT License](LICENSE).
 
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
