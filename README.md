@@ -1,10 +1,6 @@
 # GMod Lua Entity Creator for VS Code
 
-GMod Lua Entity Creator is a Visual Studio Code extension that streamlines creating Garry's Mod (GMod) Lua entities. It guides you through common metadata prompts and generates the standard `cl_init.lua`, `init.lua`, and `shared.lua` files so you can start building faster.
-
-## Overview
-
-This extension helps you scaffold GMod Lua entities in seconds. It’s designed for creators who want a consistent, repeatable entity setup without manually writing boilerplate files.
+A Visual Studio Code extension that streamlines creating Garry's Mod (GMod) Lua entities. Generate `cl_init.lua`, `init.lua`, and `shared.lua` from a guided prompt and start building immediately.
 
 ## Features
 
@@ -19,9 +15,9 @@ This extension helps you scaffold GMod Lua entities in seconds. It’s designed 
 
 ## Installation
 
-1. Open Visual Studio Code.
-2. Press `Ctrl+P` / `Cmd+P` to open Quick Open.
-3. Run `ext install gmod-lua-entity-creator`.
+1. Open Visual Studio Code
+2. Press `Ctrl+P` / `Cmd+P`
+3. Run `ext install gmod-lua-entity-creator`
 
 ## Usage
 
