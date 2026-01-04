@@ -1,21 +1,32 @@
 {
   "name": "gmod-lua-entity-creator",
   "displayName": "GMOD Lua Entity Creator",
-  "description": "Quick way to create blanko entitys for gmod lua",
-  "version": "0.0.1",
+  "description": "Quick way to create blank entities for GMod Lua.",
+  "version": "1.1.0",
   "engines": {
-    "vscode": "^1.78.0"
+    "vscode": "^1.90.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "keywords": [
+    "gmod",
+    "garrysmod",
+    "lua",
+    "entity",
+    "vscode-extension"
+  ],
+  "license": "MIT",
+  "activationEvents": [
+    "onCommand:extension.createEntity"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "extension.createEntity",
-        "title": "Create Blank Entity"
+        "title": "Create Blank Entity",
+        "category": "GMod"
       }
     ],
     "menus": {

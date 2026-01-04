@@ -1,32 +1,79 @@
-# GMod Entity Creator for VS Code
+# GMod Lua Entity Creator for VS Code
 
-A Visual Studio Code extension that simplifies the process of creating new Garry's Mod (GMod) entities using Lua.
+A Visual Studio Code extension that streamlines creating Garry's Mod (GMod) Lua entities. Generate `cl_init.lua`, `init.lua`, and `shared.lua` from a guided prompt and start building immediately.
 
 ## Features
 
-- Create new GMod entities by right-clicking on a folder in the file explorer
-- Prompt for entity settings such as class name, print name, category, type (prop or entity), and more
-- Automatically generate `cl_init.lua`, `init.lua`, and `shared.lua` files with the appropriate content based on user input
+- Create entities from the Explorer context menu
+- Prompted setup for class name, display name, category, entity type, 3D name, and model path
+- Automatic file generation for common GMod entity scaffolding
+
+## Requirements
+
+- Visual Studio Code `^1.90.0`
+- A workspace folder open in VS Code
 
 ## Installation
 
 1. Open Visual Studio Code
-2. Press `Ctrl+P` to open the Quick Open dialog
-3. Type `ext install gmod-lua-entity-creator` and press `Enter`
+2. Press `Ctrl+P` / `Cmd+P`
+3. Run `ext install gmod-lua-entity-creator`
 
 ## Usage
 
-1. Navigate to the file explorer in Visual Studio Code
-2. Right-click on the folder where you want to create a new entity
-3. Select "Create Entity" from the context menu
-4. Fill in the entity settings in the input prompts
-5. The extension will generate the required files (`cl_init.lua`, `init.lua`, and `shared.lua`) in a new folder named after the specified class name
+1. Open your GMod project folder in VS Code.
+2. Right-click a destination folder in the Explorer.
+3. Select **Create Blank Entity**.
+4. Complete the prompts.
+5. Review the generated `cl_init.lua`, `init.lua`, and `shared.lua` files.
+
+## Generated Files
+
+- `cl_init.lua`: client-side rendering and optional 3D name display
+- `init.lua`: server-side initialization and interaction hooks
+- `shared.lua`: entity metadata (name, category, spawn flags)
+
+## Commands
+
+| Command | Description |
+| --- | --- |
+| `Create Blank Entity` | Create a new GMod entity scaffold in the selected folder. |
+
+## Configuration
+
+This extension does not register any user settings. Adjust the generated Lua files to match your project conventions.
+
+## Development
+
+```bash
+npm install
+npm run compile
+```
+
+### Linting
+
+```bash
+npm run lint
+```
+
+### Tests
+
+```bash
+npm test
+```
+
+## Packaging & Publishing
+
+```bash
+npm run package
+```
+
+For publishing, follow the official VS Code extension guide: https://code.visualstudio.com/api/working-with-extensions/publishing-extension
 
 ## Contributing
 
-If you want to contribute to this project, please submit a pull request on the GitHub repository.
+Pull requests are welcome. Please open an issue to discuss major changes or feature requests.
 
 ## License
 
-This extension is released under the [MIT License](LICENSE).
-
+MIT — see [LICENSE](LICENSE).
