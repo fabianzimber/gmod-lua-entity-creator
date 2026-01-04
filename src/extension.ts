@@ -1,73 +1,141 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 import * as path from 'path';
 
+type EntityType = 'Prop' | 'Entity';
+
+interface EntitySettings {
+    className: string;
+    printName: string;
+    category: string;
+    entityType: EntityType;
+    show3DName: boolean;
+    display3DNameText: string;
+    display3DNameFont: string;
+    modelPath: string;
+}
+
+const DEFAULT_PRINT_NAME = 'New Entity';
+const DEFAULT_CATEGORY = 'Other';
+const DEFAULT_3D_NAME_FONT = 'DermaLarge';
+
 export function activate(context: vscode.ExtensionContext) {
-    let createEntityCommand = vscode.commands.registerCommand('extension.createEntity', async (folder: vscode.Uri) => {
-      const entitySettings = await promptForEntitySettings();
-      if (entitySettings) {
-        createEntity(folder.fsPath, entitySettings);
-      }
-    });
+    const createEntityCommand = vscode.commands.registerCommand(
+        'extension.createEntity',
+        async (folder: vscode.Uri | undefined) => {
+            if (!folder) {
+                vscode.window.showErrorMessage('Please run the command from a folder in the explorer.');
+                return;
+            }
+
+            const entitySettings = await promptForEntitySettings();
+            if (entitySettings) {
+                await createEntity(folder.fsPath, entitySettings);
+            }
+        }
+    );
 
     context.subscriptions.push(createEntityCommand);
 }
 
-export async function promptForEntitySettings(): Promise<any | null> {
-    const className = await vscode.window.showInputBox({ prompt: 'Class Name (required)' });
+export async function promptForEntitySettings(): Promise<EntitySettings | null> {
+    const className = await vscode.window.showInputBox({
+        prompt: 'Class Name (required)',
+        validateInput: (value) => {
+            if (!value.trim()) {
+                return 'Class name is required.';
+            }
+            if (value.includes(path.sep)) {
+                return 'Class name must not contain path separators.';
+            }
+            return undefined;
+        }
+    });
+
     if (!className) {
         return null;
     }
 
-    const printName = await vscode.window.showInputBox({ prompt: 'Print Name (optional)', value: 'New Entity' });
-    const category = await vscode.window.showInputBox({ prompt: 'Category (optional)', value: 'Other' });
+    const printName = await vscode.window.showInputBox({
+        prompt: 'Print Name (optional)',
+        value: DEFAULT_PRINT_NAME
+    });
+    const category = await vscode.window.showInputBox({
+        prompt: 'Category (optional)',
+        value: DEFAULT_CATEGORY
+    });
 
-    const propOrEntity = await vscode.window.showQuickPick(['Prop', 'Entity'], { placeHolder: 'Prop / Entity (optional)' });
-    const defaultType = propOrEntity || 'Prop';
+    const propOrEntity = await vscode.window.showQuickPick(['Prop', 'Entity'], {
+        placeHolder: 'Prop / Entity (optional)'
+    });
+    const defaultType: EntityType = propOrEntity ?? 'Prop';
 
-    const display3DName = await vscode.window.showQuickPick(['Yes', 'No'], { placeHolder: '3D Name (optional)' });
+    const display3DName = await vscode.window.showQuickPick(['Yes', 'No'], {
+        placeHolder: '3D Name (optional)'
+    });
     const show3DName = display3DName === 'Yes';
 
-    let display3DNameText = printName;
-	let display3DNameFont = 'DermaLarge';
+    let display3DNameText = printName ?? DEFAULT_PRINT_NAME;
+    let display3DNameFont = DEFAULT_3D_NAME_FONT;
     if (show3DName) {
-        display3DNameText = await vscode.window.showInputBox({ prompt: '3D Name Text (optional)', value: printName });
-		display3DNameFont = await vscode.window.showInputBox({ prompt: '3D Name Font (optional)', value: 'DermaLarge' }) || 'DermaLarge';
+        display3DNameText =
+            (await vscode.window.showInputBox({
+                prompt: '3D Name Text (optional)',
+                value: display3DNameText
+            })) ?? display3DNameText;
+        display3DNameFont =
+            (await vscode.window.showInputBox({
+                prompt: '3D Name Font (optional)',
+                value: DEFAULT_3D_NAME_FONT
+            })) ?? DEFAULT_3D_NAME_FONT;
     }
 
-    const modelPath = await vscode.window.showInputBox({ prompt: 'Model Path (optional)', value: '' });
+    const modelPath = await vscode.window.showInputBox({
+        prompt: 'Model Path (optional)',
+        value: ''
+    });
 
     return {
         className,
-        printName: printName || 'New Entity',
-        category: category || 'Other',
+        printName: printName ?? DEFAULT_PRINT_NAME,
+        category: category ?? DEFAULT_CATEGORY,
         entityType: defaultType,
         show3DName,
-        display3DNameText: display3DNameText || printName,
-        display3DNameFont: display3DNameFont || 'DermaLarge',
-        modelPath: modelPath || ''
+        display3DNameText,
+        display3DNameFont,
+        modelPath: modelPath ?? ''
     };
 }
 
-
-export function createEntity(folderPath: string, entitySettings: any) {
+export async function createEntity(folderPath: string, entitySettings: EntitySettings): Promise<void> {
     const classNamePath = path.join(folderPath, entitySettings.className);
-    if (!fs.existsSync(classNamePath)) {
-        fs.mkdirSync(classNamePath);
+
+    try {
+        await fs.mkdir(classNamePath, { recursive: false });
+    } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'EEXIST') {
+            vscode.window.showErrorMessage('An entity with this class name already exists.');
+            return;
+        }
+
+        vscode.window.showErrorMessage('Unable to create the entity folder.');
+        return;
     }
 
     const clInitContent = createClInitContent(entitySettings);
     const initContent = createInitContent(entitySettings);
     const sharedContent = createSharedContent(entitySettings);
 
-    fs.writeFileSync(path.join(classNamePath, 'cl_init.lua'), clInitContent);
-    fs.writeFileSync(path.join(classNamePath, 'init.lua'), initContent);
-    fs.writeFileSync(path.join(classNamePath, 'shared.lua'), sharedContent);
+    await Promise.all([
+        fs.writeFile(path.join(classNamePath, 'cl_init.lua'), clInitContent),
+        fs.writeFile(path.join(classNamePath, 'init.lua'), initContent),
+        fs.writeFile(path.join(classNamePath, 'shared.lua'), sharedContent)
+    ]);
 
     vscode.window.showInformationMessage('Entity created successfully!');
 }
 
-function createClInitContent(entitySettings: any): string {
+function createClInitContent(entitySettings: EntitySettings): string {
     const { display3DNameFont, display3DNameText, show3DName } = entitySettings;
 
     if (show3DName) {
@@ -81,7 +149,7 @@ function ENT:Draw()
 end
 
 function ENT:DrawTranslucent()
-    if self:GetPos():DistToSqr( LocalPlayer():GetPos() ) < 10000 then
+    if self:GetPos():DistToSqr(LocalPlayer():GetPos()) < 10000 then
         surface.SetFont("${display3DNameFont}")
         local textw, texth = surface.GetTextSize("${display3DNameText}")
         local w = 5 + textw + 5
@@ -100,17 +168,17 @@ function ENT:DrawTranslucent()
         cam.End3D2D()
     end
 end`;
-    } else {
-        return `AddCSLuaFile()
+    }
+
+    return `AddCSLuaFile()
 include("shared.lua")
-	
+
 function ENT:Draw()
     self:DrawModel()
 end`;
-    }
 }
 
-function createInitContent(entitySettings: any): string {
+function createInitContent(entitySettings: EntitySettings): string {
     const { entityType, modelPath } = entitySettings;
 
     if (entityType === 'Prop') {
@@ -132,8 +200,9 @@ function ENT:AcceptInput(Name, Activator, ply)
         // Run your interaction code here
     end
 end`;
-    } else {
-        return `include("shared.lua")
+    }
+
+    return `include("shared.lua")
 
 function ENT:Initialize()
     self:SetUseType(SIMPLE_USE)
@@ -158,10 +227,9 @@ function ENT:AcceptInput(Name, Activator, ply)
         // Run your code here
     end
 end`;
-    }
 }
 
-function createSharedContent(entitySettings: any): string {
+function createSharedContent(entitySettings: EntitySettings): string {
     const { entityType, printName, category } = entitySettings;
 
     if (entityType === 'Prop') {
@@ -173,16 +241,16 @@ ENT.Category = "${category}"
 
 ENT.Spawnable = true
 ENT.AdminSpawnable = true`;
-    } else {
-        return `AddCSLuaFile()
-    
+    }
+
+    return `AddCSLuaFile()
+
 ENT.Type = "anim"
 ENT.Base = "base_anim"
-    
+
 ENT.PrintName = "${printName}"
 ENT.Category = "${category}"
-    
+
 ENT.Spawnable = true
 ENT.AdminSpawnable = true`;
-    }
 }
