@@ -2,6 +2,14 @@
 
 All notable changes to the "gmod-lua-entity-creator" extension will be documented in this file.
 
+## [1.1.0] - 2024-06-09
+
+### Added
+
+- Improved input validation and error handling for entity creation.
+- Updated TypeScript and ESLint configurations for stricter defaults.
+- Enhanced README with modern usage, development, and publishing guidance.
+
 ## [1.0.0] - 2023-05-12
 
 ### Added
